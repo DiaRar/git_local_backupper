@@ -49,6 +49,6 @@ fn main() {
     let git_push = run_in_terminal("git push local master", &current_dir);
     match git_push.status.success() {
         true => println!("Files pushed"),
-        false => println!("Files already pushed - {}", String::from_utf8_lossy(&git_push.stderr)),
+        false => println!("Error - {}", String::from_utf8_lossy(&git_push.stderr)),
     }
 }
