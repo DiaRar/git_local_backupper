@@ -31,9 +31,10 @@ fn push(remote : &str, branch : &str, current_dir: &str) -> Output {
 }
 fn add_and_commit(current_dir: &str, commit_message: &str) {
     let _git_add = run_in_terminal("git add .", &current_dir);
-    println!("git add: {}", String::from_utf8_lossy(&_git_add.stderr));
-    let _git_commit = run_in_terminal(&format!("git commit -m \"{}\"", commit_message), &current_dir);
-    println!("git commit: {}", String::from_utf8_lossy(&_git_commit.stdout));
+    let commit_command = format!("git commit -m \"{}\"", commit_message);
+    println!("Commit command: {}", commit_command);
+    let _git_commit = run_in_terminal(&commit_command, &current_dir);
+   println!("Commit message: {}", String::from_utf8_lossy(&_git_commit.stderr));
 }
 fn get_destination_dir(parent: &str, dir_name: &str) -> String {
     let mut destination_dir = parent.to_string();
