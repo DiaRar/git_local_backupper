@@ -25,7 +25,9 @@ fn run_in_terminal(command: &str, cwd: &str) -> Output {
         .current_dir(cwd)
         .output()
         .expect("IO Error")
-
+}
+fn push(remote : &str, branch : &str, current_dir: &str) -> Output {
+     run_in_terminal(&format!("git push {} {}", remote, branch), &current_dir)
 }
 fn add_and_commit(current_dir: &str, commit_message: &str) {
     let _git_add = run_in_terminal("git add .", &current_dir);
@@ -56,7 +58,10 @@ fn main() {
         false => println!("Remote already exists"),
     }
     let _git_init = run_in_terminal("git init --bare", &destination_dir);
-    let git_push = run_in_terminal("git push local master", &current_dir);
+    let git_push = push("local", "master", &current_dir);
+    if let Some(_) = args.get("remote") {
+        let _ = push("origin", "master", &current_dir);
+    }
     match git_push.status.success() {
         true => println!("Files pushed"),
         false => {
