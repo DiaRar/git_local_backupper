@@ -29,12 +29,9 @@ fn run_in_terminal(command: &str, cwd: &str) -> Output {
 fn push(remote : &str, branch : &str, current_dir: &str) -> Output {
      run_in_terminal(&format!("git push {} {}", remote, branch), &current_dir)
 }
-fn add_and_commit(current_dir: &str, commit_message: &Vec<String>) {
+fn add_and_commit(current_dir: &str, commit_message: &str) {
     let _git_add = run_in_terminal("git add .", &current_dir);
-    let mut commit_command = "git commit".to_string();
-    for message in commit_message {
-        commit_command.push_str(&format!(" -m \"{}\"", message));
-    }
+    let commit_command = format!("git commit -m \"{}\"", &commit_message);
     let _git_commit = run_in_terminal(&commit_command, &current_dir);
 }
 fn get_destination_dir(parent: &str, dir_name: &str) -> String {
@@ -56,8 +53,8 @@ fn main() {
     }
     let (_, args) = argmap::parse(args());
     let default = vec!["Empty".to_string()];
-    let commit_message = args.get("commit").unwrap_or(&default);
-    add_and_commit(&current_dir, commit_message);
+    let commit_message = args.get("commit").unwrap_or(&default).join(" ");
+    add_and_commit(&current_dir, &commit_message);
     let adding_dir = run_in_terminal(&format!("git remote add local {}", &destination_dir), &current_dir);
     match adding_dir.status.success() {
         true => println!("Remote added"),
