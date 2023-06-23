@@ -26,7 +26,10 @@ fn run_in_terminal(command: &str, cwd: &str) -> Output {
         .expect("IO Error")
 
 }
-
+fn add_and_commit(current_dir: &str, commit_message: &str) {
+    let _git_add = run_in_terminal("git add .", &current_dir);
+    let _git_commit = run_in_terminal(&format!("git commit -m \"{}\"", commit_message), &current_dir);
+}
 fn main() {
     let Dir{dir: current_dir, dir_name, parent} = get_current_dir();
     let mut destination_dir = parent.clone();
@@ -46,12 +49,19 @@ fn main() {
         true => println!("Remote added"),
         false => println!("Remote already exists"),
     }
-    let _git_add = run_in_terminal("git add .", &current_dir);
-    let _git_commit = run_in_terminal(&format!("git commit -m \"{}\"", commit_message), &current_dir);
+    add_and_commit(&current_dir, &commit_message);
     let _git_init = run_in_terminal("git init --bare", &destination_dir);
     let git_push = run_in_terminal("git push local master", &current_dir);
     match git_push.status.success() {
         true => println!("Files pushed"),
-        false => println!("Push Error \n {}", String::from_utf8_lossy(&git_push.stderr)),
+        false => {
+            println!("Push Error \n {}", String::from_utf8_lossy(&git_push.stderr));
+            run_in_terminal("git remote rm local", &current_dir);
+            add_and_commit(&current_dir, &commit_message);
+            let push_retry = run_in_terminal("git push local master", &current_dir);
+            if !push_retry.status.success() {
+                panic!("Push Error \n {}", String::from_utf8_lossy(&push_retry.stderr));
+            }
+        },
     }
 }
