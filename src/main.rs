@@ -78,7 +78,7 @@ fn main() {
     if let Some(remote) = args.get("remote") {
         let remote_push = push(&remote.join(""), "master", &current_dir);
         match remote_push.status.success() {
-            true => println!("Files pushed to origin"),
+            true => println!("Files pushed to {}", &remote.join("")),
             false => println!("Origin remote not set!\n{}", String::from_utf8_lossy(&remote_push.stderr)),
         }
     }
