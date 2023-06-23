@@ -31,14 +31,19 @@ fn push(remote : &str, branch : &str, current_dir: &str) -> Output {
 }
 fn add_and_commit(current_dir: &str, commit_message: &str) {
     let _git_add = run_in_terminal("git add .", &current_dir);
+    println!("git add: {}", String::from_utf8_lossy(&_git_add.stdout));
     let _git_commit = run_in_terminal(&format!("git commit -m \"{}\"", commit_message), &current_dir);
 }
-fn main() {
-    let Dir{current_dir, dir_name, parent} = get_current_dir();
-    let mut destination_dir = parent.clone();
+fn get_destination_dir(parent: &str, dir_name: &str) -> String {
+    let mut destination_dir = parent.to_string();
     destination_dir.replace_range(0..1, "D");
     destination_dir.push_str("\\git_backups\\");
     destination_dir.push_str(&dir_name);
+    destination_dir
+}
+fn main() {
+    let Dir{current_dir, dir_name, parent} = get_current_dir();
+    let destination_dir = get_destination_dir(&parent, &dir_name);
     println!("Destination: {}", &destination_dir);
     match Path::new(&destination_dir).exists() {
         true => println!("Destination directory exists"),
