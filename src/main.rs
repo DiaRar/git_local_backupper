@@ -41,7 +41,7 @@ fn main() {
         true => println!("Files committed"),
         false => println!("Files already committed - {}", String::from_utf8_lossy(&git_commit.stderr)),
     }
-    let git_init = run_in_terminal("git init --base", &destination_dir);
+    let git_init = run_in_terminal("git init --bare", &destination_dir);
     match git_init.status.success() {
         true => println!("Git initialized"),
         false => println!("Git already initialized - {}", String::from_utf8_lossy(&git_init.stderr)),
