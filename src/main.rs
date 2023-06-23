@@ -57,7 +57,7 @@ fn main() {
     }
     let _git_init = run_in_terminal("git init --bare", &destination_dir);
     let local_push = push("local", "master", &current_dir);
-    
+    // Testing
     match local_push.status.success() {
         true => println!("Files pushed"),
         false => {
