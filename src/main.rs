@@ -33,6 +33,7 @@ fn main() {
     destination_dir.replace_range(0..1, "D");
     destination_dir.push_str("\\git_backups\\");
     destination_dir.push_str(&dir_name);
+    println!("Destination: {}", &destination_dir);
     match Path::new(&destination_dir).exists() {
         true => println!("Destination directory exists"),
         false => {
