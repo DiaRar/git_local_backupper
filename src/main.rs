@@ -28,7 +28,7 @@ fn main() {
     let commit_message = args().nth(1).unwrap_or("Empty".to_string());
     let adding_dir = run_in_terminal(&format!("git remote add local {}", &destination_dir), &current_dir);
     match adding_dir {
-        Ok(_) => println!("Remote added"),
+        Ok(out) => println!("Remote added  - {}", String::from_utf8_lossy(&out.stdout)),
         Err(_) => println!("Remote already exists"),
     }
     run_in_terminal("git add .", &current_dir).expect("Failed to add files");
