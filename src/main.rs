@@ -62,6 +62,8 @@ fn main() {
             let push_retry = run_in_terminal("git push local master", &current_dir);
             if !push_retry.status.success() {
                 panic!("Push Error \n {}", String::from_utf8_lossy(&push_retry.stderr));
+            } else {
+                println!("Files pushed");
             }
         },
     }
