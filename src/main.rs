@@ -58,11 +58,9 @@ fn main() {
         false => println!("Remote already exists"),
     }
     let _git_init = run_in_terminal("git init --bare", &destination_dir);
-    let git_push = push("local", "master", &current_dir);
-    if let Some(_) = args.get("remote") {
-        let _ = push("origin", "master", &current_dir);
-    }
-    match git_push.status.success() {
+    let local_push = push("local", "master", &current_dir);
+    
+    match local_push.status.success() {
         true => println!("Files pushed"),
         false => {
             println!("Usually it's because there is another local lmao");
@@ -75,5 +73,13 @@ fn main() {
                 false => panic!("Push Error \n {}", String::from_utf8_lossy(&push_retry.stderr)),
             }
         },
+    }
+
+    if let Some(_) = args.get("remote") {
+        let remote_push = push("origin", "master", &current_dir);
+        match remote_push.status.success() {
+            true => println!("Files pushed to remote"),
+            false => panic!("Remote not set! \n {}", String::from_utf8_lossy(&remote_push.stderr)),
+        }
     }
 }
