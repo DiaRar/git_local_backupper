@@ -44,12 +44,12 @@ fn main() {
         }
     }
     let commit_message = args().nth(1).unwrap_or("Empty".to_string());
+    add_and_commit(&current_dir, &commit_message);
     let adding_dir = run_in_terminal(&format!("git remote add local {}", &destination_dir), &current_dir);
     match adding_dir.status.success() {
         true => println!("Remote added"),
         false => println!("Remote already exists"),
     }
-    add_and_commit(&current_dir, &commit_message);
     let _git_init = run_in_terminal("git init --bare", &destination_dir);
     let git_push = run_in_terminal("git push local master", &current_dir);
     match git_push.status.success() {
@@ -58,6 +58,7 @@ fn main() {
             println!("Push Error \n {}", String::from_utf8_lossy(&git_push.stderr));
             run_in_terminal("git remote rm local", &current_dir);
             add_and_commit(&current_dir, &commit_message);
+            run_in_terminal(&format!("git remote add local {}", &destination_dir), &current_dir);
             let push_retry = run_in_terminal("git push local master", &current_dir);
             if !push_retry.status.success() {
                 panic!("Push Error \n {}", String::from_utf8_lossy(&push_retry.stderr));
