@@ -1,6 +1,7 @@
 use std::env::{current_dir, args};
 use std::path::Path;
 use std::process::{Command, Output};
+use argmap;
 struct Dir {
     current_dir: String,
     dir_name: String,
@@ -43,7 +44,11 @@ fn main() {
             run_in_terminal(&format!("mkdir {}", &destination_dir), &current_dir);
         }
     }
-    let commit_message = args().nth(1).unwrap_or("Empty".to_string());
+    let (_, args) = argmap::parse(args());
+    let commit_message = args.get("commit").unwrap_or(&vec!["Empty".to_string()]).join(" ");
+    println!("Commit message: {}", commit_message);
+    // let commit_message = args().nth(1).unwrap_or("Empty".to_string());
+    
     add_and_commit(&current_dir, &commit_message);
     let adding_dir = run_in_terminal(&format!("git remote add local {}", &destination_dir), &current_dir);
     match adding_dir.status.success() {
