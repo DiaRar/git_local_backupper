@@ -26,10 +26,10 @@ fn main() {
         }
     }
     let commit_message = args().nth(1).unwrap_or("Empty".to_string());
-    let adding_dir = run_in_terminal(&format!("git remote add local {}", &destination_dir), &current_dir);
-    match adding_dir {
-        Ok(out) => println!("Remote added  - {:#?}", out),
-        Err(_) => println!("Remote already exists"),
+    let adding_dir = run_in_terminal(&format!("git remote add local {}", &destination_dir), &current_dir).expect("Error");
+    match adding_dir.status.success() {
+        true => println!("Remote added "),
+        false => println!("Remote already exists - {}", String::from_utf8_lossy(&adding_dir.stderr)),
     }
     run_in_terminal("git add .", &current_dir).expect("Failed to add files");
     run_in_terminal(&format!("git commit -m \"{}\"", commit_message), &current_dir).expect("Failed to commit");
