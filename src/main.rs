@@ -1,10 +1,22 @@
 use std::env::{current_dir, args};
 use std::path::Path;
 use std::process::{Command, Output};
-fn get_current_dir() -> String {
+struct Dir {
+    dir: String,
+    dir_name: String,
+    parent: String,
+}
+fn get_current_dir() -> Dir {
     let current_dir = current_dir().unwrap();
+    let parent = current_dir.parent().unwrap();
+    let current_dir_name = current_dir.file_name().unwrap();
     let current_dir = current_dir.to_str().unwrap();
-    current_dir.to_string()
+    
+    Dir {
+        dir: current_dir.to_string(),
+        dir_name: current_dir_name.to_str().unwrap().to_string(),
+        parent: parent.to_str().unwrap().to_string(),
+    }
 }
 fn run_in_terminal(command: &str, cwd: &str) -> Output {
     Command::new("cmd")
@@ -16,9 +28,11 @@ fn run_in_terminal(command: &str, cwd: &str) -> Output {
 }
 
 fn main() {
-    let current_dir = get_current_dir();
-    let mut destination_dir = current_dir.clone();
+    let Dir{dir: current_dir, dir_name, parent} = get_current_dir();
+    let mut destination_dir = parent.clone();
     destination_dir.replace_range(0..1, "D");
+    destination_dir.push_str("\\git_backups\\");
+    destination_dir.push_str(&dir_name);
     match Path::new(&destination_dir).exists() {
         true => println!("Destination directory exists"),
         false => {
@@ -29,26 +43,14 @@ fn main() {
     let adding_dir = run_in_terminal(&format!("git remote add local {}", &destination_dir), &current_dir);
     match adding_dir.status.success() {
         true => println!("Remote added"),
-        false => println!("Remote already exists - {}", String::from_utf8_lossy(&adding_dir.stderr)),
+        false => println!("Remote already exists"),
     }
-    let git_add = run_in_terminal("git add .", &current_dir);
-    match git_add.status.success() {
-        true => println!("Files added"),
-        false => println!("Files already added - {}", String::from_utf8_lossy(&git_add.stderr)),
-    }
-    let git_commit = run_in_terminal(&format!("git commit -m \"{}\"", commit_message), &current_dir);
-    match git_commit.status.success() {
-        true => println!("Files committed"),
-        false => println!("Files already committed - {}", String::from_utf8_lossy(&git_commit.stderr)),
-    }
-    let git_init = run_in_terminal("git init --bare", &destination_dir);
-    match git_init.status.success() {
-        true => println!("Git initialized"),
-        false => println!("Git already initialized - {}", String::from_utf8_lossy(&git_init.stderr)),
-    }
+    let _git_add = run_in_terminal("git add .", &current_dir);
+    let _git_commit = run_in_terminal(&format!("git commit -m \"{}\"", commit_message), &current_dir);
+    let _git_init = run_in_terminal("git init --bare", &destination_dir);
     let git_push = run_in_terminal("git push local master", &current_dir);
     match git_push.status.success() {
         true => println!("Files pushed"),
-        false => println!("Error - {}", String::from_utf8_lossy(&git_push.stderr)),
+        false => println!("Push Error \n {}", String::from_utf8_lossy(&git_push.stderr)),
     }
 }
