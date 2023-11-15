@@ -1,4 +1,4 @@
-# An automatic git creator/rusher
+# An automatic git creator/pusher
 > A CLI app that automatically creates a git and pushes the content of the current folder into an external hard drive to be backupped.
 > TO BE REFACTORED/IMPLEMENTED: cloud pushing to GitHub
 
